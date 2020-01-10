@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Ofl.IO
 {
@@ -12,40 +13,42 @@ namespace Ofl.IO
             // Validate parameters.
             if (textReader == null) throw new ArgumentNullException(nameof(textReader));
 
+            IEnumerable<string> Implementation() {
+                // The line.
+                string line;
+
+                // Cycle through readline.  While there's a value, yield.
+                while ((line = textReader.ReadLine()) != null)
+                    yield return line;
+            }
+
             // Call the implementation.
-            return textReader.GetEnumerableImplementation();
+            return Implementation();
         }
 
-        private static IEnumerable<string> GetEnumerableImplementation(this TextReader textReader)
-        {
-            // Validate parameters.
-            if (textReader == null) throw new ArgumentNullException(nameof(textReader));
-
-            // The line.
-            string line;
-
-            // Cycle through readline.  While there's a value, yield.
-            while ((line = textReader.ReadLine()) != null)
-                yield return line;
-        }
-
-        public static IAsyncEnumerable<string> GetAsyncEnumerable(this TextReader reader)
+        public static IAsyncEnumerable<string> GetAsyncEnumerable(
+            this TextReader reader,
+            CancellationToken cancellationToken
+        )
         {
             // Validate parameters.
             if (reader == null) throw new ArgumentNullException(nameof(reader));
 
-            // The line.
-            string line = null;
+            // The implementation.
+            async IAsyncEnumerable<string> Implementation() {
+                // The line.
+                string line;
 
-            // Create the enumerator.
-            return AsyncEnumerable.CreateEnumerable(() =>
-                AsyncEnumerable.CreateEnumerator(async ct => {
-                    // Read the line.
-                    line = await reader.ReadLineAsync().ConfigureAwait(false);
+                // While the line is not null.
+                while (!cancellationToken.IsCancellationRequested &&
+                    (line = await reader.ReadLineAsync().ConfigureAwait(false)) != null
+                )
+                    // Yield
+                    yield return line;
+            }
 
-                    // If the line is null, stop reading.
-                    return line != null;
-                }, () => line, () => { }));
+            // Return the implementation.
+            return Implementation();
         }
     }
 }

@@ -1,15 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Utilities for working with IO routines/abstractions.</Description>
     <AssemblyName>Ofl.IO</AssemblyName>
     <PackageId>Ofl.IO</PackageId>
     <PackageProjectUrl>https://github.com/OneFrameLink/Ofl.IO</PackageProjectUrl>
     <RepositoryUrl>https://github.com/OneFrameLink/Ofl.IO.git</RepositoryUrl>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Interactive.Async" Version="3.1.1" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62925-02" PrivateAssets="All" />
-  </ItemGroup>
 </Project>
