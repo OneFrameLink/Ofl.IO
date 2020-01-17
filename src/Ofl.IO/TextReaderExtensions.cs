@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Ofl.IO
@@ -13,6 +13,7 @@ namespace Ofl.IO
             // Validate parameters.
             if (textReader == null) throw new ArgumentNullException(nameof(textReader));
 
+            // The implementation.
             IEnumerable<string> Implementation() {
                 // The line.
                 string line;
@@ -26,29 +27,23 @@ namespace Ofl.IO
             return Implementation();
         }
 
-        public static IAsyncEnumerable<string> GetAsyncEnumerable(
+        public static async IAsyncEnumerable<string> GetAsyncEnumerable(
             this TextReader reader,
-            CancellationToken cancellationToken
+            [EnumeratorCancellation] CancellationToken cancellationToken
         )
         {
             // Validate parameters.
             if (reader == null) throw new ArgumentNullException(nameof(reader));
 
-            // The implementation.
-            async IAsyncEnumerable<string> Implementation() {
-                // The line.
-                string line;
+            // The line.
+            string line;
 
-                // While the line is not null.
-                while (!cancellationToken.IsCancellationRequested &&
-                    (line = await reader.ReadLineAsync().ConfigureAwait(false)) != null
-                )
-                    // Yield
-                    yield return line;
-            }
-
-            // Return the implementation.
-            return Implementation();
+            // While the line is not null.
+            while (!cancellationToken.IsCancellationRequested &&
+                (line = await reader.ReadLineAsync().ConfigureAwait(false)) != null
+            )
+                // Yield
+                yield return line;
         }
     }
 }
